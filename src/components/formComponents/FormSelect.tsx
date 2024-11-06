@@ -1,51 +1,51 @@
+import {
+  Select,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+} from "@chakra-ui/react";
 import React from "react";
-import { useField } from "formik";
-import Select from "react-select";
-import { FormControl, FormLabel, FormErrorMessage } from "@chakra-ui/react";
 
-interface Option {
-  label: string;
-  value: string;
-}
-
-interface IFormSelectProps {
+interface FormSelectProps {
   label: string;
   name: string;
-  options: Option[];
-  selectProps?: any; // Optional additional props for ReactSelect
+  placeholder?: string;
+  options: Array<{ label: string; value: string }>;
+  onChange: (field: string, value: any) => void;
+  onBlur: (field: string, touched: boolean) => void;
+  error?: string;
+  touched?: boolean;
+  value?: string;
 }
 
-const FormSelect: React.FC<IFormSelectProps> = ({
+const FormSelect: React.FC<FormSelectProps> = ({
   label,
   name,
+  placeholder,
   options,
-  selectProps,
+  onChange,
+  onBlur,
+  error,
+  touched,
+  value,
 }) => {
-  // Use Formik's useField to connect the select input with Formik state
-  const [field, meta, helpers] = useField(name);
-
-  const handleChange = (option: Option | null) => {
-    // Call Formik's setValue function to update field value in Formik state
-    helpers.setValue(option ? option.value : "");
-  };
-
-  const handleBlur = () => {
-    // Call Formik's setTouched function to mark field as touched
-    helpers.setTouched(true);
-  };
-
   return (
-    <FormControl isInvalid={!!meta.error && meta.touched}>
-      <FormLabel htmlFor={name}>{label}</FormLabel>
+    <FormControl isInvalid={!!error && touched}>
+      <FormLabel>{label}</FormLabel>
       <Select
-        id={name}
-        options={options}
-        value={options.find((option) => option.value === field.value)}
-        onChange={handleChange}
-        onBlur={handleBlur}
-        {...selectProps}
-      />
-      <FormErrorMessage>{meta.error}</FormErrorMessage>
+        placeholder={placeholder}
+        name={name}
+        onChange={(e) => onChange(name, e.target.value)}
+        onBlur={() => onBlur(name, true)}
+        value={value || ""}
+      >
+        {options.map((option) => (
+          <option key={option.value} value={option.value}>
+            {option.label}
+          </option>
+        ))}
+      </Select>
+      {error && touched && <FormErrorMessage>{error}</FormErrorMessage>}
     </FormControl>
   );
 };

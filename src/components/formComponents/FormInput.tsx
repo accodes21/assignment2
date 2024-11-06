@@ -1,52 +1,45 @@
+import {
+  Input,
+  FormControl,
+  FormLabel,
+  FormErrorMessage,
+} from "@chakra-ui/react";
 import React from "react";
-import { Input } from "@chakra-ui/react";
-import FormWrapper from "./FormWrapper";
-import { IFormInputProps } from "../../interface/forms";
 
-const FormInput = React.forwardRef<HTMLInputElement, IFormInputProps>(
-  (
-    {
-      name,
-      label,
-      placeholder,
-      type,
-      value,
-      onChange,
-      onBlur,
-      error,
-      touched,
-      inputProps = {},
-      children,
-      helperText,
-      wrapperProps = {},
-    },
-    ref
-  ) => {
-    return (
-      <FormWrapper
-        isInvalid={Boolean(error && touched)}
-        wrapperProps={wrapperProps}
-        helperText={helperText}
-        label={label}
-        touched={touched}
-        error={error as string}
-      >
-        <Input
-          name={name}
-          placeholder={placeholder}
-          type={type}
-          value={value}
-          onChange={onChange}
-          onBlur={onBlur}
-          ref={ref}
-          {...inputProps}
-        />
-        {children}
-      </FormWrapper>
-    );
-  }
-);
+interface FormInputProps {
+  label: string;
+  name: string;
+  placeholder?: string;
+  onChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  onBlur: (e: React.FocusEvent<HTMLInputElement>) => void;
+  error?: string;
+  touched?: boolean;
+  value?: string | number;
+}
 
-FormInput.displayName = "FormInput";
+const FormInput: React.FC<FormInputProps> = ({
+  label,
+  name,
+  placeholder,
+  onChange,
+  onBlur,
+  error,
+  touched,
+  value,
+}) => {
+  return (
+    <FormControl isInvalid={!!error && touched}>
+      <FormLabel>{label}</FormLabel>
+      <Input
+        name={name}
+        placeholder={placeholder}
+        onChange={onChange}
+        onBlur={onBlur}
+        value={value}
+      />
+      {error && touched && <FormErrorMessage>{error}</FormErrorMessage>}
+    </FormControl>
+  );
+};
 
 export default FormInput;
